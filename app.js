@@ -1,12 +1,24 @@
-var express = require("express");
-var app = express();
+/* eslint-disable no-unused-vars */
+const express = require("express");
+const mongoose = require("mongoose");
+const Book = require("./models/bookModel");
+
+const app = express();
 const bookRouter = express.Router();
-// eslint-disable-next-line no-undef
-var port = process.env.PORT || 3000;
+const db = mongoose.connect("mongodb://localhost/bookAPI");
+const port = process.env.PORT || 3000;
 
 bookRouter.route("/books").get((req, res) => {
-  const response = { hello: "This is my API" };
-  res.json(response);
+  const query = {};
+  if (req.query.genre) {
+    query.genre = req.query.genre;
+  }
+  Book.find(query, (err, books) => {
+    if (err) {
+      return res.send(err);
+    }
+    return res.json(books);
+  });
 });
 app.use("/api", bookRouter);
 
